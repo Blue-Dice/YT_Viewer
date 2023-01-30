@@ -1,4 +1,4 @@
-from viewer.stream import stream
+from viewer.YouTube import YTViewer
 
 if __name__ == '__main__':
-    stream()
+    YTViewer().run()

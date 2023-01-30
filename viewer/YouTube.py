@@ -13,10 +13,11 @@ import os
 from decouple import config
 
 class YTViewer():
-    keep_alive = True
-    
+    status = True
+    keep_alive = config('KEEP_ALIVE', cast=bool, default=False)
     def __init__(self):
         try:
+            print('Fetching all video urls...')
             self.playlist = []
             stream_config = json.load(open('stream.json', 'r'))
             for url in stream_config['playlists']:
@@ -25,11 +26,17 @@ class YTViewer():
             self.playlength = len(self.playlist)
             print(f'Located {self.playlength} videos')
         except Exception as e:
-            self.keep_alive = False
+            self.status = False
             print(f'Error while reading stream configuration -> {e}')
     
+    def run(self):
+        self.create_stealth_session()
+        self.stream_video()
+        self.destroy_session()
+        if self.keep_alive: self.run()
+    
     def create_stealth_session(self):
-        if self.keep_alive:
+        if self.status:
             try:
                 if not os.path.isdir('chromedriver'):
                     os.mkdir('chromedriver')
@@ -58,11 +65,11 @@ class YTViewer():
                 )
                 print('Session successfully created')
             except Exception as e:
-                self.keep_alive = False
+                self.status = False
                 print(f'Error while starting chrome driver -> {e}')
     
     def create_undetected_session(self):
-        if self.keep_alive:
+        if self.status:
             try:
                 options = ChromeOptions()
                 if config('HEADLESS', cast=bool):
@@ -72,7 +79,7 @@ class YTViewer():
                 self.driver = uc.Chrome(options=options)
                 print('Session successfully created')
             except Exception as e:
-                self.keep_alive = False
+                self.status = False
                 print(f'Error while starting chrome driver -> {e}')
     
     def destroy_session(self):
@@ -85,7 +92,7 @@ class YTViewer():
     def stream_video(self):
         video_count = 0
         for url in self.playlist:
-            if self.keep_alive:
+            if self.status:
                 try:
                     print(f'Streaming [{url}]')
                     self.driver.get(url)
@@ -105,5 +112,5 @@ class YTViewer():
                     print(f'Finished streaming -> video count: {video_count}/{self.playlength}')
                 except Exception as e:
                     print(f'Error while streaming [{url}] -> {e}')
-                    self.keep_alive = False
+                    self.status = False
                     continue
