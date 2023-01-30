@@ -30,31 +30,36 @@ class YTViewer():
     
     def create_stealth_session(self):
         if self.keep_alive:
-            if not os.path.isdir('chromedriver'):
-                os.mkdir('chromedriver')
-            driver_path = chromedriver_autoinstaller.install(path='chromedriver')
-            options = ChromeOptions()
-            if config('HEADLESS', cast=bool):
-                options.add_argument('--headless')
-            options.add_argument('--no-sandbox')
-            options.add_argument("--start-maximized")
-            options.add_argument('--disable-blink-features')
-            options.add_argument('--disable-blink-features=AutomationControlled')
-            options.add_experimental_option('excludeSwitches', ['enable-logging'])
-            options.add_experimental_option('excludeSwitches', ['enable-automation'])
-            options.add_experimental_option('useAutomationExtension', False)
-            self.driver = webdriver.Chrome(service=ChromeService(driver_path), options=options)
-            stealth(
-                self.driver,
-                user_agent='Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36',
-                languages=["en-GB","en-US", "en"],
-                vendor="Google Inc.",
-                platform="Linux x86_64",
-                webgl_vendor="Intel Inc.",
-                renderer="Intel Iris OpenGL Engine",
-                fix_hairline=True,
-                run_on_insecure_origins=True,
-            )
+            try:
+                if not os.path.isdir('chromedriver'):
+                    os.mkdir('chromedriver')
+                driver_path = chromedriver_autoinstaller.install(path='chromedriver')
+                options = ChromeOptions()
+                if config('HEADLESS', cast=bool):
+                    options.add_argument('--headless')
+                options.add_argument('--no-sandbox')
+                options.add_argument('--start-maximized')
+                options.add_argument('--disable-blink-features')
+                options.add_argument('--disable-blink-features=AutomationControlled')
+                options.add_experimental_option('excludeSwitches', ['enable-logging'])
+                options.add_experimental_option('excludeSwitches', ['enable-automation'])
+                options.add_experimental_option('useAutomationExtension', False)
+                self.driver = webdriver.Chrome(service=ChromeService(driver_path), options=options)
+                stealth(
+                    self.driver,
+                    user_agent='Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36',
+                    languages=['en-GB', 'en-US', 'en'],
+                    vendor='Google Inc.',
+                    platform='Linux x86_64',
+                    webgl_vendor='Intel Inc.',
+                    renderer='Intel Iris OpenGL Engine',
+                    fix_hairline=True,
+                    run_on_insecure_origins=True,
+                )
+                print('Session successfully created')
+            except Exception as e:
+                self.keep_alive = False
+                print(f'Error while starting chrome driver -> {e}')
     
     def create_undetected_session(self):
         if self.keep_alive:
