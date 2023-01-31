@@ -10,12 +10,13 @@ import json
 import time
 import random
 import os
-from decouple import config
 
 class YTViewer():
-    status = True
-    keep_alive = config('KEEP_ALIVE', cast=bool, default=False)
-    def __init__(self):
+    
+    def __init__(self, keep_alive, enable_headless):
+        self.status = True
+        self.keep_alive = keep_alive
+        self.enable_headless = enable_headless
         try:
             print('Fetching all video urls...')
             self.playlist = []
@@ -42,10 +43,13 @@ class YTViewer():
                     os.mkdir('chromedriver')
                 driver_path = chromedriver_autoinstaller.install(path='chromedriver')
                 options = ChromeOptions()
-                if config('HEADLESS', cast=bool):
+                if self.enable_headless:
                     options.add_argument('--headless')
+                    options.add_argument('--disable-gpu')
                 options.add_argument('--no-sandbox')
                 options.add_argument('--start-maximized')
+                options.add_argument('--disable-extensions')
+                options.add_argument('--disable-dev-shm-usage')
                 options.add_argument('--disable-blink-features')
                 options.add_argument('--disable-blink-features=AutomationControlled')
                 options.add_experimental_option('excludeSwitches', ['enable-logging'])
@@ -72,8 +76,9 @@ class YTViewer():
         if self.status:
             try:
                 options = ChromeOptions()
-                if config('HEADLESS', cast=bool):
+                if self.enable_headless:
                     options.add_argument('--headless')
+                    options.add_argument('--disable-gpu')
                 options.add_argument('--no-sandbox')
                 options.add_argument('--start-maximized')
                 self.driver = uc.Chrome(options=options)
