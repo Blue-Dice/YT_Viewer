@@ -14,6 +14,7 @@ import os
 class YTViewer():
     
     def __init__(self, keep_alive, enable_headless):
+        self.session_count = 1
         self.status = True
         self.keep_alive = keep_alive
         self.enable_headless = enable_headless
@@ -34,7 +35,10 @@ class YTViewer():
         self.create_stealth_session()
         self.stream_video()
         self.destroy_session()
-        if self.keep_alive: self.run()
+        if self.keep_alive and self.status:
+            print(f'Restarting session -> Completed: [{self.session_count}]')
+            self.session_count += 1
+            self.run()
     
     def create_stealth_session(self):
         if self.status:
