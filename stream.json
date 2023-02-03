@@ -1,6 +1,8 @@
 {
-    "playlists": [
-        "https://www.youtube.com/watch?v=JGwWNGJdvx8&list=PLPSCssPYXhWTTcpNZwYoEQWt8Wc8KO0NV"
-    ],
-    "videos": []
+    "playlists": [],
+    "videos": [
+        "https://www.youtube.com/watch?v=u_bOhfQIkRY&ab_channel=DevGoel",
+        "https://www.youtube.com/watch?v=IWo_iwsQWp8&ab_channel=DevGoel",
+        "https://www.youtube.com/watch?v=KdjPO7EUOwA&ab_channel=DevGoel"
+    ]
 }
