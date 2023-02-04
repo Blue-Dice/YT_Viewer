@@ -10,6 +10,7 @@ import requests
 from requests.exceptions import RequestException
 import zipfile
 import chromedriver_autoinstaller
+from decouple import config
 import pytube
 import json
 import platform
@@ -34,8 +35,7 @@ class YTViewer():
         self.session_count = 1
         self.video_count = 0
         self.status = True
-        self.proxy = None
-        self.proxy_type = None
+        self.proxy_url = config('PROXY_URL')
         self.workers = workers
         self.auth_required = False
         self.keep_alive = keep_alive
@@ -85,8 +85,8 @@ class YTViewer():
     def spoof_geolocation(self, driver):
         try:
             proxy_dict = {
-                'http': f'{self.proxy_type}://{self.proxy}',
-                'https': f'{self.proxy_type}://{self.proxy}',
+                'http': f'{self.proxy_url}',
+                'https': f'{self.proxy_url}',
             }
             resp = requests.get('http://ip-api.com/json', proxies=proxy_dict, timeout=30)
             if resp.status_code == 200:
@@ -127,7 +127,7 @@ class YTViewer():
                     self.create_proxy_extension()
                     options.add_argument(f'--load-extension={self.proxy_path}')
                 elif self.enable_proxy == 'no-auth':
-                    options.add_argument(f'--proxy-server={self.proxy_type}://{self.proxy}')
+                    options.add_argument(f'--proxy-server={self.proxy_url}')
                 options.add_argument('--no-sandbox')
                 options.add_argument('--mute-audio')
                 options.add_argument('--log-level=3')
@@ -162,8 +162,7 @@ class YTViewer():
                 print(f'Error while starting chrome driver -> {e}')
     
     def wait_session(self, start_time, seek_time):
-        while int(time.time()-start_time) < seek_time:
-            pass # bypass linter
+        while int(time.time()-start_time) < seek_time: pass # bypass linter
     
     def stream_video(self, driver, url):
         if self.status:
